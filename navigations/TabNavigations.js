@@ -2,8 +2,10 @@ import React from "react";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from "../screens/Home";
 // import Chats from "../screens/Chats/Chats";
-import Settings from "../screens/Settings";
+// import Settings from "../screens/Settings/SettingsHome";
 import ChatNavigation from "./ChatNavigation";
+// import SettingsHome from "../screens/Settings/SettingsHome";
+import SettingsNavigation from "./SettingsNavigation";
 // import { createStackNavigator } from "@react-navigation/stack";
 
 // const Stack = createStackNavigator();
@@ -24,6 +26,6 @@ export default () => (
     <TabNavigation.Navigator>
         <TabNavigation.Screen name="Home" component={Home} />
         <TabNavigation.Screen name="Chats" component={ChatNavigation} />
-        <TabNavigation.Screen name="Settings" component={Settings} />
+        <TabNavigation.Screen name="Settings" component={SettingsNavigation} />
     </TabNavigation.Navigator>
 )

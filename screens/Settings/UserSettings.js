@@ -3,6 +3,6 @@ import { Text, View } from "react-native";
 
 export default () => (
     <View>
-        <Text>Sign up</Text>
+        <Text>User</Text>
     </View>
 )

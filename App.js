@@ -24,6 +24,7 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(null);
   const preLoad = async() => {
     try{
+      await AsyncStorage.clear();
       await Font.loadAsync({
         ...FontAwesome5.font
       });

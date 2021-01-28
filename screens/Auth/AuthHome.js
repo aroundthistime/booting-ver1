@@ -1,17 +1,38 @@
 import React from "react";
-import { Text, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { StatusBar, Text } from "react-native";
 import styled from "styled-components"
+import AuthButton from "../../components/AuthButton";
+import AuthOtherOption from "../../components/AuthOtherOption";
+import constants from "../../constants";
 
+const View = styled.View`
+    justify-content : center;
+    align-items : center;
+    flex : 1;
+    background-color : ${props => props.theme.pastelBg}
+`
+
+const Title = styled.Text`
+    font-size : 60px;
+    color : #FDFFFE;
+`
+
+const SubTitle = styled.Text`
+    font-size : 15px;
+    color : #FDFFFE;
+    margin-bottom : ${constants.height / 20};
+
+`
 
 export default ({navigation}) => (
     <View>
-        <Text>Home</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-            <Text>Login</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-            <Text>Sign up</Text>
-        </TouchableOpacity>
+        <StatusBar></StatusBar>
+        <Title>Booting</Title>
+        <SubTitle>Only for hufs</SubTitle>
+        <AuthButton onPress={() => navigation.navigate("Login")} text="로그인"/>
+        <AuthOtherOption
+            onPress={() => navigation.navigate("AuthEmail", {isSignup : true})}
+            text="회원가입"
+        />
     </View>
 )

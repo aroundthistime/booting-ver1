@@ -1,3 +1,3 @@
 export default {
-    uri : "https://localhost:4000/graphql"
+    uri : "http://192.168.0.9:5000"
 }

@@ -2,7 +2,9 @@ import React from "react";
 import { createStackNavigator } from '@react-navigation/stack';
 import AuthHome from "../screens/Auth/AuthHome";
 import Login from "../screens/Auth/Login";
-import SignUp from "../screens/Auth/SignUp";
+import AuthEmail from "../screens/Auth/AuthEmail";
+import EmailAuthentication from "../screens/Auth/EmailAuthentication";
+import SetPassword from "../screens/Auth/SetPassword";
 
 const AuthNavigation = createStackNavigator();
 
@@ -14,17 +16,27 @@ export default () => (
         <AuthNavigation.Screen
             name="AuthHome"
             component={AuthHome}
-            options={{title : "Welcome"}}
+            options={{title : "환영합니다"}}
         />
-                <AuthNavigation.Screen
+        <AuthNavigation.Screen
             name="Login"
             component={Login}
-            options={{title : "Login"}}
+            options={{title : "로그인"}}
         />
-                <AuthNavigation.Screen
-            name="Signup"
-            component={SignUp}
-            options={{title : "Sign up"}}
+        <AuthNavigation.Screen
+            name="AuthEmail"
+            component={AuthEmail}
+            options={{title : "회원가입"}}
+        />
+        <AuthNavigation.Screen
+            name="EmailAuthentication"
+            component={EmailAuthentication}
+            options={{title : "이메일 인증"}}
+        />
+        <AuthNavigation.Screen
+            name="SetPassword"
+            component={SetPassword}
+            options={{title : "비밀번호 변경"}}
         />
     </AuthNavigation.Navigator>
 )

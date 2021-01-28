@@ -3,6 +3,6 @@ import { Text, View } from "react-native";
 
 export default () => (
     <View>
-        <Text>Settings</Text>
+        <Text>알림</Text>
     </View>
 )
