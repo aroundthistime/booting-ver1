@@ -5,6 +5,7 @@ import TabNavigations from "../navigations/TabNavigations";
 
 export default () => {
     const isLoggedIn = useIsLoggedIn();
+    // const isLoggedIn = true;
     if (isLoggedIn){
         return <TabNavigations />
     } else {

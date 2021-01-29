@@ -1,8 +1,13 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { Text } from "react-native";
+import styled from "styled-components";
+import Loader from "../components/Loader";
+import ViewContainer from "../components/ViewContainer";
+
 
 export default () => (
-    <View>
-        <Text>Home</Text>
-    </View>
+    <ViewContainer>
+        {/* <Text>Home</Text>*/}
+        <Loader></Loader>
+    </ViewContainer>
 )

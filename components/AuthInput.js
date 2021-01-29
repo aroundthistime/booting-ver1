@@ -11,7 +11,6 @@ const TextInput = styled.TextInput`
   width: ${constants.width / 1.6};
   padding: 10px;
   background-color: ${props => props.theme.grayColor};
-  
   border-radius: 4px;
 `;
 

@@ -6,6 +6,7 @@ import Home from "../screens/Home";
 import ChatNavigation from "./ChatNavigation";
 // import SettingsHome from "../screens/Settings/SettingsHome";
 import SettingsNavigation from "./SettingsNavigation";
+import TabIcon from "../components/TabIcon";
 // import { createStackNavigator } from "@react-navigation/stack";
 
 // const Stack = createStackNavigator();
@@ -23,9 +24,38 @@ const TabNavigation = createBottomTabNavigator();
   
 
 export default () => (
-    <TabNavigation.Navigator>
-        <TabNavigation.Screen name="Home" component={Home} />
-        <TabNavigation.Screen name="Chats" component={ChatNavigation} />
-        <TabNavigation.Screen name="Settings" component={SettingsNavigation} />
+    <TabNavigation.Navigator tabBarOptions={{
+        showLabel : false,
+        tabStyle : {
+            backgroundColor : "#FAFAFA"
+        }
+    }}>
+        <TabNavigation.Screen
+            name="Home"
+            component={Home}
+            options={{
+                tabBarIcon : ({focused}) => focused
+                ? <TabIcon name="user-alt" group="fontAwemsome5" color="rgba(100, 100, 100, 0.9)" />
+                : <TabIcon name="user" group="fontAwemsome5" />
+            }}
+        />
+        <TabNavigation.Screen
+            name="Chats"
+            component={ChatNavigation}
+            options={{
+                tabBarIcon : ({focused}) => focused
+                ? <TabIcon name="chatbubble-ellipses" size={24} color="rgba(100, 100, 100, 0.9)" />
+                : <TabIcon name="chatbubble-ellipses-outline" size={24} />
+            }}
+        />
+        <TabNavigation.Screen
+            name="Settings"
+            component={SettingsNavigation}
+            options={{
+                tabBarIcon : ({focused}) => focused
+                ? <TabIcon name="cog" group="fontAwemsome5" color="rgba(100, 100, 100, 0.9)"/>
+                : <TabIcon name="cog" group="fontAwemsome5" color="rgba(100, 100, 100, 0.3)"/>
+            }}
+        />
     </TabNavigation.Navigator>
 )
