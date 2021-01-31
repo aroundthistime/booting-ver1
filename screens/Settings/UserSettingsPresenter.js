@@ -158,16 +158,16 @@ const PickerContainer = styled.View`
     margin-bottom : 10;
 `
 
-const ProfileInfoOptionBtn = ({text, onPress, selected}) => {
+const ProfileInfoOptionBtn = ({text, onPress, selected, size=50}) => {
     if (selected){
         return (
-            <ProfileInfoOptionBtnSelected onPress={onPress} activeOpacity={1}>
+            <ProfileInfoOptionBtnSelected onPress={onPress} activeOpacity={1} style={{width : size}}>
                 <ProfileInfoOptionBtnTextSelected>{text}</ProfileInfoOptionBtnTextSelected>
             </ProfileInfoOptionBtnSelected>
         )
     } else{
         return (
-            <ProfileInfoOptionBtnContainer onPress={onPress} activeOpacity={1}>
+            <ProfileInfoOptionBtnContainer onPress={onPress} activeOpacity={1} style={{width : size}}>
                 <ProfileInfoOptionBtnText>{text}</ProfileInfoOptionBtnText>
             </ProfileInfoOptionBtnContainer>
         )
@@ -204,7 +204,8 @@ export default ({
     opponentMbti,
     opponentIsSmoker,
     opponentDrink,
-    opponentFinishedMilitary
+    opponentFinishedMilitary,
+    isDeactivated
 }) => {
     const [loading, setLoading] = useState(false);
     const [userInfo, setUserInfo] = useState({
@@ -227,7 +228,8 @@ export default ({
         opponentMbti,
         opponentIsSmoker,
         opponentDrink,
-        opponentFinishedMilitary
+        opponentFinishedMilitary,
+        isDeactivated
     });
     const nameInput = useInput(name ? name : "");
     const birthYearInput = useNumInput(birthYear ? `${birthYear}` : "");
@@ -418,27 +420,33 @@ export default ({
             && opponentAgeTopInput.value
             && opponentHeightBottomInput.value
             && opponentHeightTopInput.value
-            && opponentHeightBottomInput.value <= opponentHeightTopInput.value
+            && parseFloat(opponentHeightBottomInput.value) <= parseFloat(opponentHeightTopInput.value)
         );
         if (settingsDone1 && settingsDone2){
             try{
-                const formData = new FormData();
-                formData.append("file", {
-                    name : avatar,
-                    type : "image/jpeg",
-                    uri : thumbnail
-                });
-                const {data : { location}} = await axios.post("http://192.168.0.9:5000/api/upload", formData, {
-                    headers : {
-                        "content-type" : "multipart/form-data"
-                    }
-                });
+                let newAvatar = avatar;
+                if (avatar !== thumbnail){
+                    const formData = new FormData();
+                    formData.append("file", {
+                        name : avatar,
+                        type : "image/jpeg",
+                        uri : thumbnail
+                    });
+                    console.log("BEFOREPHOTOUPLOAD");
+                    const {data : { location}} = await axios.post("http://192.168.0.9:5000/api/upload", formData, {
+                        headers : {
+                            "content-type" : "multipart/form-data"
+                        }
+                    });
+                    console.group("DONEWITHUPLOAD");
+                    newAvatar = location;
+                }
                 const {
                     data : { setUserSettings }
                 } = await setUserSettingsMutation({
                     variables : {
                         ...userInfo,
-                        avatar : location,
+                        avatar : newAvatar,
                         name : nameInput.value,
                         birthYear : parseInt(birthYearInput.value),
                         height : parseFloat(heightInput.value),
@@ -448,6 +456,7 @@ export default ({
                         opponentHeightTop : parseFloat(opponentHeightTopInput.value),
                     }
                 });
+                console.log("DONEWITHWSETTTTINGS");
                 if (setUserSettings){
                     navigation.navigate("SettingsHome");
                 } else{
@@ -721,6 +730,33 @@ export default ({
                                 />
                             </ProfileInfo>
                     )}
+                    <ProfileInfo>
+                        <ProfileInfoTitleGrid>계정 상태</ProfileInfoTitleGrid>
+                        <FlatGrid
+                            itemDimension={55}
+                            data={["활성화", "비활성화"]}
+                            renderItem={({item})  => (
+                                <ProfileInfoOptionBtn
+                                    text={item}
+                                    selected={(userInfo.isDeactivated && item === "비활성화") || (!userInfo.isDeactivated && item === "활성화")}
+                                    onPress={() => {
+                                        if (item === "활성화"){
+                                            setUserInfo({
+                                                ...userInfo,
+                                                isDeactivated : false
+                                            })
+                                        } else {
+                                            setUserInfo({
+                                                ...userInfo,
+                                                isDeactivated : true
+                                            })
+                                        }
+                                    }}
+                                    size={60}
+                                />
+                            )}
+                        />
+                    </ProfileInfo>
                 </ProfileInfos>
                 <TouchableOpacity onPress={onSubmit}>
                     <Text>HIHIHIHIHII</Text>

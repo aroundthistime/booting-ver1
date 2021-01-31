@@ -20,7 +20,10 @@ export default () => (
         <SettingsNavigation.Screen 
             name="UserSettings"
             component={UserSettings}
-            options={{title : "계정", headerRight : () => <SetSettingsLink />}}
+            options={{
+                title : "계정", 
+                headerRight : () => <SetSettingsLink/>
+            }}
         />
         <SettingsNavigation.Screen 
             name="AlertSettings"

@@ -24,6 +24,7 @@ export const GET_ME = gql`
             opponentIsSmoker,
             opponentDrink,
             opponentFinishedMilitary
+            isDeactivated
         }
     }
 `
@@ -50,6 +51,7 @@ export const SET_USER_SETTINGS = gql`
         $opponentIsSmoker : Boolean,
         $opponentDrink : [Drink!]!,
         $opponentFinishedMilitary : Boolean,
+        $isDeactivated : Boolean!
     ){
         setUserSettings(
             name : $name,
@@ -72,6 +74,7 @@ export const SET_USER_SETTINGS = gql`
             opponentIsSmoker : $opponentIsSmoker,
             opponentDrink : $opponentDrink,
             opponentFinishedMilitary : $opponentFinishedMilitary,
+            isDeactivated : $isDeactivated
         )
     }
 `
