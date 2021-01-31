@@ -12,8 +12,8 @@ const Text = styled.Text`
     font-weight : bold;
 `
 
-export default () => (
-    <Container>
+export default ({onPress}) => (
+    <Container onPress={onPress}>
         <Text>완료</Text>
     </Container>
 )

@@ -20,10 +20,13 @@ export default () => (
         <SettingsNavigation.Screen 
             name="UserSettings"
             component={UserSettings}
-            options={{
+            options={({navigation, route}) => ({
                 title : "계정", 
-                headerRight : () => <SetSettingsLink/>
-            }}
+                headerRight : () => <SetSettingsLink onPress={() => {
+                    console.log("❤❤❤❤");
+                    navigation.setParams({updateUser : true})
+                }}/>
+            })}
         />
         <SettingsNavigation.Screen 
             name="AlertSettings"

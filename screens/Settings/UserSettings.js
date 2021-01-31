@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
+import React  from "react";
 import { useQuery } from "react-apollo-hooks";
 import Loader from "../../components/Loader";
 import { GET_ME  } from "./SettingsQueries";
 import UserSettingsPresenter from "./UserSettingsPresenter";
 
 
-export default ({navigation}) => {
+export default ({route, navigation}) => {
     const {loading, data } = useQuery(GET_ME, {
         fetchPolicy : "network-only"
     });
@@ -14,7 +14,7 @@ export default ({navigation}) => {
             {loading && (
                 <Loader></Loader>
             )}
-            {!loading && data && data.getMe && <UserSettingsPresenter {...data.getMe} navigation={navigation} />}
+            {!loading && data && data.getMe && <UserSettingsPresenter {...data.getMe} navigation={navigation} route = {route} />}
         </>
     )
 }

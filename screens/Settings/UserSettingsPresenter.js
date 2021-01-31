@@ -2,7 +2,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import React, { useEffect, useState } from "react";
 import { useMutation } from "react-apollo-hooks";
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity} from "react-native";
+import { Alert, ScrollView, StyleSheet } from "react-native";
 import { FlatGrid } from "react-native-super-grid";
 import styled from "styled-components";
 import * as ImagePicker from 'expo-image-picker';
@@ -13,7 +13,7 @@ import ViewContainer from "../../components/ViewContainer";
 import constants from "../../constants";
 import useInput from "../../Hooks/useInput";
 import useNumInput from "../../Hooks/useNumInput";
-import { GET_ME, SET_USER_SETTINGS } from "./SettingsQueries";
+import { SET_USER_SETTINGS } from "./SettingsQueries";
 
 
 const GENDER_LIST = ["남", "여"];
@@ -184,6 +184,7 @@ const TextAmongInput = styled.Text`
 const DEFAULT_IMG = "https://t4.ftcdn.net/jpg/02/15/84/43/240_F_215844325_ttX9YiIIyeaR7Ne6EaLLjMAmy4GvPC69.jpg"
 
 export default ({
+    route,
     navigation,
     name,
     avatar,
@@ -261,6 +262,86 @@ export default ({
     useEffect(() => {
         askPermission();
     }, []);
+    const onSubmit = async() => {
+        setLoading(true);
+        const settingsDone1 = Object.keys(userInfo).every(key => {
+            if (ADDITIONAL_CHECK_KEYS.indexOf(key) > -1
+            || NULLABLE_KEYS.indexOf(key) > -1){
+                return true;
+            }
+            if (userInfo[key] !== null && (typeof userInfo[key] !== "object" || userInfo[key].length > 0)){
+                return true;
+            }
+            return false;
+        });
+        const settingsDone2 = Boolean(
+            thumbnail && thumbnail !== DEFAULT_IMG
+            && nameInput.value
+            && birthYearInput.value.length === 4
+            && heightInput.value
+            && opponentAgeBottomInput.value
+            && opponentAgeTopInput.value
+            && opponentHeightBottomInput.value
+            && opponentHeightTopInput.value
+            && parseFloat(opponentHeightBottomInput.value) <= parseFloat(opponentHeightTopInput.value)
+        );
+        if (settingsDone1 && settingsDone2){
+            try{
+                let newAvatar = avatar;
+                if (avatar !== thumbnail){
+                    const formData = new FormData();
+                    formData.append("file", {
+                        name : avatar,
+                        type : "image/jpeg",
+                        uri : thumbnail
+                    });
+                    console.log("BEFOREPHOTOUPLOAD");
+                    const {data : { location}} = await axios.post("http://192.168.0.9:5000/api/upload", formData, {
+                        headers : {
+                            "content-type" : "multipart/form-data"
+                        }
+                    });
+                    console.group("DONEWITHUPLOAD");
+                    newAvatar = location;
+                }
+                const {
+                    data : { setUserSettings }
+                } = await setUserSettingsMutation({
+                    variables : {
+                        ...userInfo,
+                        avatar : newAvatar,
+                        name : nameInput.value,
+                        birthYear : parseInt(birthYearInput.value),
+                        height : parseFloat(heightInput.value),
+                        opponentAgeBottom : parseInt(opponentAgeBottomInput.value),
+                        opponentAgeTop : parseInt(opponentAgeTopInput.value),
+                        opponentHeightBottom : parseFloat(opponentHeightBottomInput.value),
+                        opponentHeightTop : parseFloat(opponentHeightTopInput.value),
+                    }
+                });
+                console.log("DONEWITHWSETTTTINGS");
+                if (setUserSettings){
+                    navigation.navigate("SettingsHome");
+                } else{
+                    Alert.alert("오류가 발생하였습니다. 다시 시도해주세요")
+                }
+            } catch(error){
+                console.log(error);
+            }
+        } else {
+            Alert.alert("설정이 제대로 완료되지 않은 항목이 있습니다")
+        }
+        setLoading(false);
+    }
+    useEffect(() => {
+        if (route.params && route.params.updateUser){
+            onSubmit();
+            navigation.setParams({
+                ...route.params,
+                updateUser : false
+            })
+        };
+    }, [route])
     const handleGenderPress = (gender) => {
         if (gender === "남"){
             setUserInfo({
@@ -398,77 +479,6 @@ export default ({
             ...userInfo,
             opponentFinishedMilitary
         })
-    }
-    const onSubmit = async() => {
-        setLoading(true);
-        const settingsDone1 = Object.keys(userInfo).every(key => {
-            if (ADDITIONAL_CHECK_KEYS.indexOf(key) > -1
-            || NULLABLE_KEYS.indexOf(key) > -1){
-                return true;
-            }
-            if (userInfo[key] !== null && (typeof userInfo[key] !== "object" || userInfo[key].length > 0)){
-                return true;
-            }
-            return false;
-        });
-        const settingsDone2 = Boolean(
-            thumbnail && thumbnail !== DEFAULT_IMG
-            && nameInput.value
-            && birthYearInput.value.length === 4
-            && heightInput.value
-            && opponentAgeBottomInput.value
-            && opponentAgeTopInput.value
-            && opponentHeightBottomInput.value
-            && opponentHeightTopInput.value
-            && parseFloat(opponentHeightBottomInput.value) <= parseFloat(opponentHeightTopInput.value)
-        );
-        if (settingsDone1 && settingsDone2){
-            try{
-                let newAvatar = avatar;
-                if (avatar !== thumbnail){
-                    const formData = new FormData();
-                    formData.append("file", {
-                        name : avatar,
-                        type : "image/jpeg",
-                        uri : thumbnail
-                    });
-                    console.log("BEFOREPHOTOUPLOAD");
-                    const {data : { location}} = await axios.post("http://192.168.0.9:5000/api/upload", formData, {
-                        headers : {
-                            "content-type" : "multipart/form-data"
-                        }
-                    });
-                    console.group("DONEWITHUPLOAD");
-                    newAvatar = location;
-                }
-                const {
-                    data : { setUserSettings }
-                } = await setUserSettingsMutation({
-                    variables : {
-                        ...userInfo,
-                        avatar : newAvatar,
-                        name : nameInput.value,
-                        birthYear : parseInt(birthYearInput.value),
-                        height : parseFloat(heightInput.value),
-                        opponentAgeBottom : parseInt(opponentAgeBottomInput.value),
-                        opponentAgeTop : parseInt(opponentAgeTopInput.value),
-                        opponentHeightBottom : parseFloat(opponentHeightBottomInput.value),
-                        opponentHeightTop : parseFloat(opponentHeightTopInput.value),
-                    }
-                });
-                console.log("DONEWITHWSETTTTINGS");
-                if (setUserSettings){
-                    navigation.navigate("SettingsHome");
-                } else{
-                    Alert.alert("오류가 발생하였습니다. 다시 시도해주세요")
-                }
-            } catch(error){
-                console.log(error);
-            }
-        } else {
-            Alert.alert("설정이 제대로 완료되지 않은 항목이 있습니다")
-        }
-        setLoading(false);
     }
     return (
         <>
@@ -758,9 +768,6 @@ export default ({
                         />
                     </ProfileInfo>
                 </ProfileInfos>
-                <TouchableOpacity onPress={onSubmit}>
-                    <Text>HIHIHIHIHII</Text>
-                </TouchableOpacity>
             </ViewContainer>
         </ScrollView>
         )}
