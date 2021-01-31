@@ -1,27 +1,12 @@
 import React from "react";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Home from "../screens/Home";
-// import Chats from "../screens/Chats/Chats";
-// import Settings from "../screens/Settings/SettingsHome";
 import ChatNavigation from "./ChatNavigation";
-// import SettingsHome from "../screens/Settings/SettingsHome";
 import SettingsNavigation from "./SettingsNavigation";
 import TabIcon from "../components/TabIcon";
-// import { createStackNavigator } from "@react-navigation/stack";
+import Home from "../screens/Home/Home";
 
-// const Stack = createStackNavigator();
 const TabNavigation = createBottomTabNavigator();
 
-// const stackFactory = (initialRoute, name, customConfig) => (
-//     <Stack.Navigator>
-//       <Stack.Screen
-//         name={name}
-//         component={initialRoute}
-//         options={{ ...customConfig }}
-//       />
-//     </Stack.Navigator>
-//   );
-  
 
 export default () => (
     <TabNavigation.Navigator tabBarOptions={{

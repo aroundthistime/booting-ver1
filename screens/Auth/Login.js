@@ -1,16 +1,14 @@
-import { responsePathAsArray } from "graphql";
 import React, { useState } from "react";
 import { useQuery } from "react-apollo-hooks";
 import { Alert, Keyboard,TouchableWithoutFeedback } from "react-native";
 import styled from "styled-components";
-import { useLogUserIn, useLogUserOut } from "../../AuthContext";
+import { useLogUserIn } from "../../AuthContext";
 import AuthButton from "../../components/AuthButton";
 import AuthInput from "../../components/AuthInput";
 import AuthOtherOption from "../../components/AuthOtherOption";
 import useInput from "../../Hooks/useInput";
 import { emailValidator } from "../../utils";
 import { LOG_IN } from "./AuthQueries";
-// import { Text, View } from "react-native";
 
 const View = styled.View`
     justify-content : center;

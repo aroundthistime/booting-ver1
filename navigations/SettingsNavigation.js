@@ -4,6 +4,7 @@ import UserSettings from "../screens/Settings/UserSettings";
 import AlertSettings from "../screens/Settings/AlertSettings";
 import SettingsHome from "../screens/Settings/SettingsHome";
 import SetSettingsLink from "../components/SetSettingsLink";
+import SettingsVersion from "../screens/Settings/SettingsVersion";
 
 const SettingsNavigation = createStackNavigator();
 
@@ -31,6 +32,13 @@ export default () => (
         <SettingsNavigation.Screen 
             name="AlertSettings"
             component={AlertSettings}
+        />
+        <SettingsNavigation.Screen
+            name="SettingsVersion"
+            component={SettingsVersion}
+            options={{
+                title : "버전정보"
+            }}
         />
     </SettingsNavigation.Navigator>
 )
