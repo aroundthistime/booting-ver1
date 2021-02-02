@@ -2,7 +2,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import React, { useEffect, useState } from "react";
 import { useMutation } from "react-apollo-hooks";
-import { Alert, ScrollView, StyleSheet } from "react-native";
+import { Alert, ScrollView, StyleSheet, Text } from "react-native";
 import { FlatGrid } from "react-native-super-grid";
 import styled from "styled-components";
 import * as ImagePicker from 'expo-image-picker';
@@ -120,11 +120,6 @@ const ProfileInfoTitle = styled.Text`
     padding-top : 7.5;
     margin-right : 15;
 `
-
-const ProfileInfoOptionBtns = styled.View`
-    flex-direction : row;
-`
-
 const ProfileInfoOptionBtnContainer = styled.TouchableOpacity`
     border : 1.3px solid rgba(0, 0, 0, 0.15);
     justify-content : center;
@@ -235,8 +230,8 @@ export default ({
     const nameInput = useInput(name ? name : "");
     const birthYearInput = useNumInput(birthYear ? `${birthYear}` : "");
     const heightInput = useNumInput(height ? `${height}` : "");
-    const opponentAgeBottomInput = useNumInput(opponentAgeTop ? `${opponentAgeTop}` : "");
-    const opponentAgeTopInput = useNumInput(opponentAgeBottom ? `${opponentAgeBottom}` : "");
+    const opponentAgeBottomInput = useInput(opponentAgeBottom ? `${opponentAgeBottom}` : "");
+    const opponentAgeTopInput = useInput(opponentAgeTop ? `${opponentAgeTop}` : "");
     const opponentHeightBottomInput = useNumInput(opponentHeightBottom ? `${opponentHeightBottom}` : "");
     const opponentHeightTopInput = useNumInput(opponentHeightTop ? `${opponentHeightTop}` : "");
     const [thumbnail, setThumbnail] = useState(avatar ? avatar : DEFAULT_IMG);
@@ -281,6 +276,10 @@ export default ({
             && heightInput.value
             && opponentAgeBottomInput.value
             && opponentAgeTopInput.value
+            && !isNaN(opponentAgeBottomInput.value)
+            && !isNaN(opponentAgeTopInput.value)
+            && opponentAgeBottomInput.value == parseInt(opponentAgeBottomInput.value)
+            && opponentAgeTopInput.value == parseInt(opponentAgeTopInput.value)
             && opponentHeightBottomInput.value
             && opponentHeightTopInput.value
             && parseFloat(opponentHeightBottomInput.value) <= parseFloat(opponentHeightTopInput.value)
@@ -662,11 +661,11 @@ export default ({
                             <NumberInput {...opponentHeightTopInput} placeholder="최대 키" />
                         </ProfileInfo>
                         <ProfileInfo>
-                            <ProfileInfoTitle>이상형 나이</ProfileInfoTitle>
+                            <ProfileInfoTitle>이상형 나이차{"\n"}<Text style={{fontSize : 13}}>(연하는 마이너스)</Text></ProfileInfoTitle>
                             <NumberInput {...opponentAgeBottomInput} placeholder="최소"  isSmall={true}/>
-                            <TextAmongInput>살 연하 ~ </TextAmongInput>
+                            <TextAmongInput>살 ~ </TextAmongInput>
                             <NumberInput {...opponentAgeTopInput} placeholder="최대" isSmall={true}/>
-                            <TextAmongInput>살 연상</TextAmongInput>
+                            <TextAmongInput>살</TextAmongInput>
                         </ProfileInfo>
                         <ProfileInfo>
                             <ProfileInfoTitleGrid>이상형 MBTI{"\n"}(최소 하나)</ProfileInfoTitleGrid>
@@ -685,7 +684,7 @@ export default ({
                             />
                         </ProfileInfo>
                         <ProfileInfo>
-                            <ProfileInfoTitleGrid>이상형 음주</ProfileInfoTitleGrid>
+                            <ProfileInfoTitleGrid>이상형 음주{"\n"}<Text style={{fontSize : 13}}>(복수선택 가능)</Text></ProfileInfoTitleGrid>
                             <FlatGrid
                                 itemDimension={45}
                                 data={Object.keys(DRINK_DICTIONARY)}
