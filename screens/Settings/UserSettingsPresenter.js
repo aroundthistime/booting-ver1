@@ -294,13 +294,11 @@ export default ({
                         type : "image/jpeg",
                         uri : thumbnail
                     });
-                    console.log("BEFOREPHOTOUPLOAD");
                     const {data : { location}} = await axios.post("http://192.168.0.9:5000/api/upload", formData, {
                         headers : {
                             "content-type" : "multipart/form-data"
                         }
                     });
-                    console.group("DONEWITHUPLOAD");
                     newAvatar = location;
                 }
                 const {
@@ -318,7 +316,6 @@ export default ({
                         opponentHeightTop : parseFloat(opponentHeightTopInput.value),
                     }
                 });
-                console.log("DONEWITHWSETTTTINGS");
                 if (setUserSettings){
                     navigation.navigate("SettingsHome");
                 } else{

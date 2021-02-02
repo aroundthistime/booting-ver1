@@ -71,7 +71,15 @@ const UserButtonReport = ({onPress}) => (
         top : constants.height / 10,
         right : 23,
         flexDirection : "row",
-        alignItems : "center"
+        alignItems : "center",
+        borderWidth : 1.5,
+        borderColor : "rgba(0, 0, 0, 0.025)",
+        paddingTop : 5,
+        paddingBottom : 5,
+        paddingLeft : 12,
+        paddingRight : 12,
+        borderRadius : 30
+
     }} onPress={onPress}
     >
         <Feather name="alert-triangle" size={18} color="red" />

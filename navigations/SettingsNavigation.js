@@ -24,7 +24,6 @@ export default () => (
             options={({navigation, route}) => ({
                 title : "계정", 
                 headerRight : () => <SetSettingsLink onPress={() => {
-                    console.log("❤❤❤❤");
                     navigation.setParams({updateUser : true})
                 }}/>
             })}
