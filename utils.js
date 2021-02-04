@@ -24,3 +24,27 @@ export const formatTime = (time) => {
         return `${minutes}:${seconds}`
     }
 }
+
+export const getTimeStamp = (timeString) => {
+    const current = new Date();
+    const target = new Date(timeString);
+    if (//same date
+        current.getFullYear() === target.getFullYear()
+        && current.getMonth() === target.getMonth()
+        && current.getDate() === target.getDate()
+    ){
+        let hour = target.getHours();
+        let minute = target.getMinutes();
+        if (hour < 10){
+            hour = `0${hour}`;
+        }
+        if (minute < 10){
+            minute = `0${minute}`;
+        }
+        return `${hour}:${minute}`
+    } else if (current.getFullYear() === target.getFullYear()){//same year
+        return `${target.getMonth()+1}월 ${target.getDate()}일`
+    } else{ //different year
+        return `${target.getFullYear()}년 ${target.getMonth()+1}월 ${target.getDate()}일`
+    }
+}

@@ -5,3 +5,14 @@ export const REPORT_USER = gql`
         reportUser(id : $id, reason : $reason)
     }
 `
+
+export const GET_USER_STATUS = gql`
+    query getUserStatus{
+        getMe{
+            id
+            isBanned
+            isDeactivated
+            settingsDone
+        }
+    }
+`

@@ -15,9 +15,15 @@ export const GET_CHATS = gql`
                     id
                 }
                 isChecked
-                createdAt
             }
             createdAt
+            updatedAt
         }
+    }
+`
+
+export const QUIT_CHAT = gql`
+    mutation quitChat($id : String!){
+        quitChat(id : $id)
     }
 `
