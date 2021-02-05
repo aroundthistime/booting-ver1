@@ -1,4 +1,4 @@
-import { gql } from "apollo-boost";
+import { gql } from "@apollo/client";
 
 export const REPORT_USER = gql`
     mutation reportUser($id : String!, $reason : String!){

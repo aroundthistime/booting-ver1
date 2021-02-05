@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQuery } from "react-apollo-hooks";
+import { useQuery } from "@apollo/client";
 import { Alert, Keyboard,TouchableWithoutFeedback } from "react-native";
 import styled from "styled-components";
 import { useLogUserIn } from "../../AuthContext";

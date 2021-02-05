@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { useQuery } from "react-apollo-hooks";
+import React from "react";
+import { useQuery } from "@apollo/client";
 import Loader from "../../components/Loader";
 import ViewContainer from "../../components/ViewContainer";
 import HomePresenter from "./HomePresenter";

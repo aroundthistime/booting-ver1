@@ -48,3 +48,19 @@ export const getTimeStamp = (timeString) => {
         return `${target.getFullYear()}년 ${target.getMonth()+1}월 ${target.getDate()}일`
     }
 }
+
+export const getOpponent = (participants, userId) => {
+    const DEFAULT_USER = {
+        name : "(알수없음)",
+        avatar : "https://t4.ftcdn.net/jpg/02/15/84/43/240_F_215844325_ttX9YiIIyeaR7Ne6EaLLjMAmy4GvPC69.jpg"
+    }
+    if (participants.length > 1){
+        if (participants[0].id === userId){
+            return participants[1];
+        } else {
+            return participants[0];
+        }
+    } else {
+        return DEFAULT_USER;
+    }
+}

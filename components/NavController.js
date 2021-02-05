@@ -1,5 +1,5 @@
 import React from "react";
-import { useQuery } from "react-apollo-hooks";
+import { useQuery } from "@apollo/client";
 import { useIsLoggedIn } from "../AuthContext";
 import AuthNavigation from "../navigations/AuthNavigation";
 import TabNavigations from "../navigations/TabNavigations";

@@ -4,7 +4,7 @@ import { Feather, FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import constants from "../../constants";
 import { Alert, Animated, Text, TouchableOpacity, View } from "react-native";
 import { BoxShadow } from "react-native-shadow";
-import { useMutation } from "react-apollo-hooks";
+import { useMutation } from "@apollo/client";
 import {REPORT_USER} from "../GlobalQueries"
 import { CREATE_RESPONSE } from "./HomeQueries";
 

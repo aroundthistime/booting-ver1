@@ -1,4 +1,4 @@
-import { ApolloProvider } from "react-apollo-hooks"
+import { ApolloProvider } from "@apollo/client"
 
 export default () => {
 
