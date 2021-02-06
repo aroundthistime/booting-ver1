@@ -20,7 +20,7 @@ export default () => {
         } else{
             return <Loader />  
         }
-        // return <TabNavigations />
+        return <TabNavigations />
     } else {
         return <AuthNavigation />
     }

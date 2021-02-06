@@ -131,7 +131,7 @@ export default ({navigation}) => {
                                     </ChatInfoMain>
                                     <ChatInfoSub>
                                         <ChatTimestamp>{getTimeStamp(chat.updatedAt)}</ChatTimestamp>
-                                        {(!chat.lastMessage || !chat.lastMessage.isChecked) && <ChatUnreadMark />}
+                                        {(!chat.lastMessage || (!chat.lastMessage.isChecked && chat.lastMessage.from.id !== userObj.id)) && <ChatUnreadMark />}
                                     </ChatInfoSub>
                                 </ChatTab>
                             )
