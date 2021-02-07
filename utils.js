@@ -64,3 +64,19 @@ export const getOpponent = (participants, userId) => {
         return DEFAULT_USER;
     }
 }
+
+export const chatsSortFunc = (chat1, chat2) => {
+    let chat1Date;
+    let chat2Date;
+    if (chat1.lastMessage){
+        chat1Date = new Date(chat1.lastMessage.createdAt);
+    } else {
+        chat1Date = new Date(chat1.createdAt)
+    }
+    if (chat2.lastMessage){
+        chat2Date = new Date(chat2.lastMessage.createdAt);
+    } else {
+        chat2Date = new Date(chat2.createdAt)
+    }
+    return chat2Date - chat1Date;
+}

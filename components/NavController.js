@@ -9,6 +9,7 @@ import Loader from "./Loader";
 
 export default () => {
     const isLoggedIn = useIsLoggedIn();
+    // const isLoggedIn = true;
     if (isLoggedIn){
         const {data, loading, refetch} = useQuery(GET_USER_STATUS);
         if (!loading && data && data.getMe){
@@ -20,7 +21,7 @@ export default () => {
         } else{
             return <Loader />  
         }
-        return <TabNavigations />
+        // return <TabNavigations />
     } else {
         return <AuthNavigation />
     }

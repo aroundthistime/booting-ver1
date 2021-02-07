@@ -39,28 +39,43 @@ const MyMessage = styled.Text`
 
 const MessageTime = styled.Text`
     font-size : 12;
+`
+
+const MessageChecked = styled.Text`
+    font-size : 12;
+`
+
+const MessageInfos = styled.View`
+    justify-content : flex-end;
     opacity : 0.6;
-    align-self : flex-end;
+    font-size : 12;
     padding-bottom : 5;
 `
+
 
 const MessageContainer = styled.View`
     flex-direction : row;
 `
 
-export default ({fromMe, text, avatar, isMyFirst, createdAt=""}) => {
+export default ({fromMe, text, avatar, isMyFirst, createdAt="", isChecked=false}) => {
     if (fromMe){
         if (isMyFirst){
             return (
                 <MessageContainer style={{alignSelf : "flex-end"}}>
-                    <MessageTime style={{marginRight : 5}}>{createdAt}</MessageTime>
+                    <MessageInfos style={{marginRight : 5}}>
+                        {isChecked && <MessageChecked>읽음</MessageChecked>}
+                        {Boolean(createdAt) && <MessageTime>{createdAt}</MessageTime>}
+                    </MessageInfos>
                     <MyMessage style={{marginTop : 10}}>{text}</MyMessage>
                 </MessageContainer>
             )
         } else{
             return (
                 <MessageContainer style={{alignSelf : "flex-end"}}>
-                    <MessageTime style={{marginRight : 5}}>{createdAt}</MessageTime>
+                    <MessageInfos style={{marginRight : 5}}>
+                        {isChecked && <MessageChecked>읽음</MessageChecked>}
+                        {Boolean(createdAt) && <MessageTime>{createdAt}</MessageTime>}
+                    </MessageInfos>
                     <MyMessage>{text}</MyMessage>
                 </MessageContainer>
             )
@@ -71,7 +86,10 @@ export default ({fromMe, text, avatar, isMyFirst, createdAt=""}) => {
                 <OpponentAvatar source={{uri : avatar}} />
                 <MessageContainer>
                     <OpponentMessage style={{alignSelf : "flex-end"}}>{text}</OpponentMessage>
-                    <MessageTime style={{marginLeft : 5}}>{createdAt}</MessageTime>
+                    <MessageInfos style={{marginLeft : 5}}>
+                        {isChecked && <MessageChecked>읽음</MessageChecked>}
+                        {Boolean(createdAt) && <MessageTime>{createdAt}</MessageTime>}
+                    </MessageInfos>
                 </MessageContainer>
             </OpponentMessageWithAvatar>
         )
@@ -81,7 +99,10 @@ export default ({fromMe, text, avatar, isMyFirst, createdAt=""}) => {
                 <OpponentMessage style={{ alignSelf : "flex-start",marginLeft : 50}}>
                     {text}
                 </OpponentMessage>
-                <MessageTime style={{marginLeft : 5}}>{createdAt}</MessageTime>
+                <MessageInfos style={{marginLeft : 5}}>
+                        {isChecked && <MessageChecked>읽음</MessageChecked>}
+                        {Boolean(createdAt) && <MessageTime>{createdAt}</MessageTime>}
+                    </MessageInfos>
             </MessageContainer>
         )
     }

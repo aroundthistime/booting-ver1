@@ -1,7 +1,7 @@
-import { useMutation, useQuery } from "@apollo/client";
-import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import { useMutation, useQuery, useSubscription } from "@apollo/client";
+import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 import React, { Suspense, useEffect, useRef, useState } from "react";
-import { Alert, Keyboard, Platform, ScrollView, Text, View} from "react-native";
+import { Alert, Keyboard, Modal, Platform, ScrollView, Text, TouchableOpacity, View} from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import styled from "styled-components";
 import Loader from "../../components/Loader";
@@ -10,11 +10,12 @@ import constants from "../../constants";
 import styles from "../../styles";
 import { getUserObj } from "../../UserContext";
 import { getOpponent } from "../../utils";
-import { GET_CHAT, SEND_MESSAGE } from "./ChatQueries";
+import { REPORT_USER } from "../GlobalQueries";
+import { GET_CHAT, NEW_MESSAGE_FROM_CHAT, QUIT_CHAT, READ_MESSAGE, SEND_MESSAGE } from "./ChatQueries";
 
 const FONT_SIZE = 16;
-
 const NUMBER_OF_LINES = 2;
+const REPORT_REASONS = ["사진도용","신상정보 거짓기입", "욕설/성희롱/혐오발언","부적절한 용도로 어플사용"];
 
 const ChatNotice = styled.Text`
     text-align : center;
@@ -67,11 +68,79 @@ const ScrollBottomBtn = styled.TouchableOpacity`
     background-color : rgba(0, 0, 0, 0.5);
 `
 
+const ModalCloseBtn = styled.TouchableOpacity`
+    position : absolute;
+    top : 10;
+    right : 10;
+    width : 25;
+    height : 25;
+    border-radius : 5;
+    background-color : #E0E0E0;
+    justify-content : center;
+    align-items : center;
+`
+
+const ModalTitle = styled.Text`
+    font-size : 17.3;
+`
+
+const ModalOptions = styled.View`
+    flex-direction : row;
+    justify-content : space-between;
+    width : 240;
+    height : 110;
+    background-color : #e8e3e3;
+`
+
+const ReportModalOptions = styled.View`
+    margin-top :10;
+    width : 240;
+    height : 160;
+    background-color : #e8e3e3;
+    justify-content : space-between;
+    padding-bottom : 1;
+`
+
+const ReportModalOption = styled.TouchableOpacity`
+    width : 240;
+    padding-top : 10;
+    padding-bottom :10;
+    padding-left : 10;
+    background-color : ${props => props.theme.bgColor};
+`
+
+const ModalOption = styled.TouchableOpacity`
+    align-items : center;
+    padding-top : 20;
+    justify-content : space-between;
+    width : 119.2;
+    background-color : ${props => props.theme.bgColor};
+`
+
+
 export default ({navigation, route}) => {
     const [messageValue, setMessageValue] = useState("");
     const scrollViewRef = useRef();
     const [viewScrollBottomBtn, setViewScrollBottomBtn] = useState(false);
     const [sendMessageMutation] = useMutation(SEND_MESSAGE);
+    const [messages, setMessages] = useState([]);
+    const [opponent, setOpponent] = useState();
+    const [modalVisible, setModalVisible] = useState(false);
+    const [reportModalVisible, setReportModalVisible] = useState(false);
+    const [readMessageMutation] = useMutation(READ_MESSAGE);
+    const [quitChatMutation] = useMutation(QUIT_CHAT);
+    const [reportUserMutation] = useMutation(REPORT_USER);
+    const userObj = getUserObj();
+    const {
+        params : {chatId, opponentName}
+    } = route;
+    navigation.setOptions({title : opponentName});
+    const { data : newMessageData, loading} = useSubscription(
+        NEW_MESSAGE_FROM_CHAT,
+        { variables : {
+            id : chatId
+        }}
+    );
     const scrollToBottom = () => {
         if (scrollViewRef.current){
             scrollViewRef.current.scrollToEnd();
@@ -82,29 +151,44 @@ export default ({navigation, route}) => {
         return layoutMeasurement.height + contentOffset.y >=
           contentSize.height - paddingToBottom;
     };
-    useEffect(() => {
-        Keyboard.addListener("keyboardDidShow", scrollToBottom);
-        return () => {
-            Keyboard.removeListener("keyboardDidShow",scrollToBottom);
-        }
-    }, []);
-    const {
-        params : {chatId, opponentName}
-    } = route;
-    navigation.setOptions({title : opponentName});
     const {data, error} = useQuery(GET_CHAT, {
         suspend : true,
         variables : {
             id : chatId
         }
     });
-    const userObj = getUserObj();
-    let opponent;
-    if (data && data.getChat){
-        const {
-            getChat : { participants }
-        } = data;
-        opponent = getOpponent(participants, userObj.id);
+    useEffect(() => {
+        Keyboard.addListener("keyboardDidShow", scrollToBottom);
+        return () => {
+            Keyboard.removeListener("keyboardDidShow",scrollToBottom);
+        }
+    }, []);
+    useEffect(() => {
+        if (newMessageData && newMessageData.newMessageFromChat){
+            setMessages([...messages, newMessageData.newMessageFromChat])
+        }
+    }, [newMessageData])
+    useEffect(() => {
+        if (data && data.getChat){
+            setMessages(data.getChat.messages);
+            setOpponent(getOpponent(data.getChat.participants, userObj.id))
+        }
+    }, [data]);
+    useEffect(() => {
+        if (route.params && route.params.showModal){
+            setModalVisible(true);
+            navigation.setParams({
+                ...route.params,
+                showModal : false
+            })
+        }
+    }, [route])
+    if (messages.length > 0 && messages[messages.length-1].from.id !== userObj.id){
+        readMessageMutation({
+            variables : {
+                messageId : messages[messages.length-1].id
+            }
+        })
     }
     const formatToHourMinute = (time) => {
         const timeObj = new Date(time);
@@ -145,12 +229,11 @@ export default ({navigation, route}) => {
         return sameMinute;
     }
     const sendMessage = async() => {
-        console.log(messageValue);
         if (messageValue === ""){
             return
         }
         try{
-            const result = await sendMessageMutation({
+            sendMessageMutation({
                 variables : {
                     chatId,
                     opponentId : opponent.id,
@@ -158,12 +241,75 @@ export default ({navigation, route}) => {
                 },
             });
             setMessageValue("");
-            console.log(result);
-            Alert.alert("성공적으로 메시지 보냈어용");
         } catch(error){
             console.log(error);
         }
     }
+    const quitChat = async() => {
+        const {data : {quitChat : quitChatSuccess}} = await quitChatMutation({
+            variables : {
+                id : chatId
+            }
+        });
+        if (quitChatSuccess){
+            navigation.pop();
+        } else{
+            Alert.alert("오류가 발생하였습니다. 다시 시도해주시길 바랍니다.")
+        }
+    }
+    const reportUser = async(reason) => {
+        try{
+            const {data : {reportUser : reportUserSuccess}} = await reportUserMutation({
+                variables : {
+                    id : opponent.id,
+                    chatId,
+                    reason
+                }
+            });
+            if (reportUserSuccess){
+                Alert.alert("해당 유저에 대한 신고가 완료되었습니다")
+                navigation.pop();
+            } else {
+                Alert.alert("오류가 발생하였습니다. 다시 시도해주시길 바랍니다.")
+            }
+        } catch{
+            quitChat();
+        }
+    }
+    const confirmReportUser = (reason) => (
+        Alert.alert(
+            `${opponentName}님을 '${reason}'으로 신고하시겠습니까?`,
+            "신고시 더 이상 해당 유저로부터 메시지가 수신되지 않으며 채팅목록에서 삭제됩니다. 참고로 무분별한 신고는 정지 사유가 될 수 있으니 주의바랍니다.",
+            [
+                {
+                    text : "확인",
+                    onPress : () => {reportUser(reason);}
+                },
+                {
+                    text : "취소",
+                    onPress : () => 1
+                },
+            ],
+            {cancelable : false}
+        )
+    )
+    const confirmQuitChat = () => (
+        Alert.alert(
+            `정말로 ${opponentName}님과의 채팅을 종료하시겠습니까?`,
+            "채팅종료시 더 이상 해당 유저로부터 메시지가 수신되지 않으며 채팅목록에서 삭제됩니다.",
+            [
+                {
+                    text : "확인",
+                    onPress : () => {quitChat()}
+                },
+                {
+                    text : "취소",
+                    onPress : () => 1
+                },
+            ],
+            {cancelable : false}
+        )
+    )
     return (
         <Suspense fallback={<Loader />}>
             {data && data.getChat ? (
@@ -188,7 +334,7 @@ export default ({navigation, route}) => {
                         <ChatNotice style={{marginBottom : 20}}>
                             <Text style={{fontWeight: "bold"}}>{opponentName}</Text> 님과 매칭되었습니다 ❤{"\n"}대화를 시작해보세요
                         </ChatNotice>
-                        {data.getChat.messages.map((message, index, array) => {
+                        {messages.map((message, index, array) => {
                             if (index === 0){
                                 const fromMe = userObj.id === message.from.id;
                                 let createdAt = "";
@@ -250,6 +396,7 @@ export default ({navigation, route}) => {
                                 }
                             }
                         })}
+                        {data.getChat.participants.length < 2 && <ChatNotice style={{marginTop : 30, marginBottom : 20}}>상대방이 대화를 종료하였습니다.</ChatNotice>}
                     </ScrollView>
                 </KeyboardAwareScrollView>
                 <ChatInputContainer>
@@ -261,7 +408,7 @@ export default ({navigation, route}) => {
                         placeholder="메시지를 입력하세요"
                         maxHeight={FONT_SIZE * NUMBER_OF_LINES + 30}
                         scrollEnabled
-                        // editable={false}
+                        editable={data.getChat.participants.length > 1}
                     />
                     <ChatSendBtn onPress={()=>sendMessage()}>
                         <Ionicons name="paper-plane-sharp" size={24} color="black" />
@@ -272,6 +419,87 @@ export default ({navigation, route}) => {
                         <FontAwesome name="angle-down" size={24} color="white" />
                     </ScrollBottomBtn>
                 )}
+                <Modal
+                    animationType="none"
+                    transparent={true}
+                    visible={modalVisible}
+                    onRequestClose={() => setModalVisible(false)}
+                >
+                    <View style={{
+                         flex: 1, justifyContent: "center", alignItems: "center"
+                    }}>
+                        <View style={{
+                            shadowColor: "#000",
+                            shadowOffset: {
+                            width: 0,
+                            height: 2
+                            },
+                            width : 300,
+                            height : 250,
+                            shadowOpacity: 0.25,
+                            shadowRadius: 3.84,
+                            elevation: 5,
+                            justifyContent : "space-between",
+                            paddingVertical : 45,
+                            alignItems : "center",
+                            backgroundColor : styles.bgColor,
+                        }}>
+                            <ModalCloseBtn onPress={()=>setModalVisible(false)}>
+                                <Ionicons name="close" size={22} color="#fcfcfc" />
+                            </ModalCloseBtn>
+                            <ModalTitle>원하는 행동을 선택하세요</ModalTitle>
+                            <ModalOptions>
+                                <ModalOption onPress={()=>{confirmQuitChat(); setModalVisible(false);}}>
+                                    <Ionicons name="exit-outline" size={50} color="#a8a8a8" style={{marginLeft : 10}}/>
+                                    <Text>채팅 종료</Text>
+                                </ModalOption>
+                                <ModalOption onPress={()=>{setModalVisible(false), setReportModalVisible(true)}}>
+                                    <Feather name="alert-triangle" size={50} color="#a8a8a8" />
+                                    <Text>신고하기</Text>
+                                </ModalOption>
+                            </ModalOptions>
+                        </View>
+                    </View>
+                </Modal>
+                <Modal
+                    animationType="none"
+                    transparent={true}
+                    visible={reportModalVisible}
+                    onRequestClose={() => setReportModalVisible(false)}
+                >
+                    <View style={{
+                         flex: 1, justifyContent: "center", alignItems: "center"
+                    }}>
+                        <View style={{
+                            shadowColor: "#000",
+                            shadowOffset: {
+                            width: 0,
+                            height: 2
+                            },
+                            width : 300,
+                            height : 250,
+                            shadowOpacity: 0.25,
+                            shadowRadius: 3.84,
+                            elevation: 5,
+                            justifyContent : "space-between",
+                            paddingVertical : 30,
+                            alignItems : "center",
+                            backgroundColor : styles.bgColor,
+                        }}>
+                            <ModalCloseBtn onPress={()=>setReportModalVisible(false)}>
+                                <Ionicons name="close" size={22} color="#fcfcfc" />
+                            </ModalCloseBtn>
+                            <ModalTitle>신고 사유를 선택해주세요</ModalTitle>
+                            <ReportModalOptions>
+                                {REPORT_REASONS.map(reason => (
+                                    <ReportModalOption onPress={()=>{setReportModalVisible(false); confirmReportUser(reason);}}>
+                                        <Text>{reason}</Text>
+                                    </ReportModalOption>
+                                ))}
+                            </ReportModalOptions>
+                        </View>
+                    </View>
+                </Modal>
                 </>
             ) : (
                 <Loader />

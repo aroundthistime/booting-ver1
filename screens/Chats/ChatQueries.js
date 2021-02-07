@@ -15,6 +15,7 @@ export const GET_CHATS = gql`
                     id
                 }
                 isChecked
+                createdAt
             }
             createdAt
             updatedAt
@@ -58,5 +59,24 @@ export const SEND_MESSAGE = gql`
             id
             text
         }
+    }
+`
+
+export const NEW_MESSAGE_FROM_CHAT = gql`
+    subscription newMessageFromChat($id : String!) {
+        newMessageFromChat(id : $id){
+            id
+            text
+            from{
+                id
+            }
+            createdAt
+        }
+    }
+`
+
+export const READ_MESSAGE = gql`
+    mutation readMessage($messageId : String!){
+        readMessage(messageId : $messageId)
     }
 `
