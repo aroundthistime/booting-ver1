@@ -5,8 +5,10 @@ export const UserContext = createContext();
 export const UserProvider = ({userObj : userobjProp, refetch, children}) => {
     const [userObj, setUserObj] = useState(userobjProp);
     const refreshUser = async() => {
-        const {data : {getMe}} = await refetch();
-        setUserObj(getMe);
+        if (typeof refetch === "function"){
+            const {data : {getMe}} = await refetch();
+            setUserObj(getMe);
+        }
     }
     return <UserContext.Provider value={{userObj, refreshUser}}>{children}</UserContext.Provider>
 }

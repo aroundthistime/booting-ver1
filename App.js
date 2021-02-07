@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import { StatusBar } from 'expo-status-bar';
+// import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { useState, useEffect } from 'react';
 import AppLoading from 'expo-app-loading';
@@ -7,6 +7,7 @@ import * as Font from 'expo-font';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import { persistCache } from 'apollo-cache-persist';
+import * as Notifications from 'expo-notifications';
 import apolloOptions from './apolloOptions';
 import { Asset } from 'expo-asset';
 import { FontAwesome5 } from "@expo/vector-icons";
@@ -21,6 +22,20 @@ export default function App() {
   const [loaded, setLoaded] = useState(false);
   const [client, setClient] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(null);
+  const [notificationToken, setNotificationToken] = useState();
+  const registerForPushNotificationsAsync = async() => {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      return;
+    }
+    const token = (await Notifications.getExpoPushTokenAsync()).data;
+    return token;
+}
   const preLoad = async() => {
     try{
       await AsyncStorage.clear();
@@ -47,6 +62,8 @@ export default function App() {
       } else{
         setIsLoggedIn(false);
       }
+      const token = await registerForPushNotificationsAsync();
+      setNotificationToken(token);
       setLoaded(true);
       setClient(client);
     } catch(error){
@@ -61,12 +78,8 @@ export default function App() {
         <ApolloProvider client={client}>
           <ThemeProvider theme={styles}>
             <AuthProvider isLoggedIn={isLoggedIn}>
-              <NavController></NavController>
+              <NavController token={notificationToken}></NavController>
             </AuthProvider>
-            {/* <View>
-              <Text>Open up App.js to start working on your app!</Text>
-              <StatusBar style="auto" />
-            </View> */}
           </ThemeProvider>
         </ApolloProvider>
       </NavigationContainer>

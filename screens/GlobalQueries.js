@@ -16,3 +16,9 @@ export const GET_USER_STATUS = gql`
         }
     }
 `
+
+export const setUserToken = gql`
+    mutation setUserToken($token : String!){
+        setUserToken(token : $token)
+    }
+`
