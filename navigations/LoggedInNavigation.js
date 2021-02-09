@@ -21,12 +21,19 @@ const ShowModalsLink =  ({onPress}) => (
     </Container>
 )
 
+const getUserSettingsTitle = (settingsDone) => {
+    if (settingsDone){
+        return "계정"
+    } else {
+        return "프로필 작성"
+    }
+}
 
 const LoggedInNavigation = createStackNavigator();
 
-export default ({navigation, route}) => (
+export default ({navigation, route, settingsDone}) => (
     <LoggedInNavigation.Navigator
-        initialRouteName="Tabs"
+        initialRouteName={settingsDone ? "Tabs" : "UserSettings"}
     >
         <LoggedInNavigation.Screen
             name="Tabs"
@@ -39,7 +46,7 @@ export default ({navigation, route}) => (
             name="UserSettings"
             component={UserSettings}
             options={({navigation, route}) => ({
-                title : "계정", 
+                title : getUserSettingsTitle(settingsDone), 
                 headerRight : () => <SetSettingsLink onPress={() => {
                     navigation.setParams({updateUser : true})
                 }}/>

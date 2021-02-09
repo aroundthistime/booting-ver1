@@ -18,7 +18,7 @@ export const getUserObj = () => {
     return userObj
 }
 
-export const refreshUserObj = () => {
+export const getRefreshUser = () => {
     const {refreshUser} = useContext(UserContext);
     return refreshUser
 }

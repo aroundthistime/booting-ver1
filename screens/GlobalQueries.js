@@ -17,8 +17,23 @@ export const GET_USER_STATUS = gql`
     }
 `
 
-export const setUserToken = gql`
+export const SET_USER_TOKEN = gql`
     mutation setUserToken($token : String!){
         setUserToken(token : $token)
+    }
+`
+
+export const ACTIVATE_USER = gql`
+    mutation activateUser{
+        activateUser
+    }
+`
+
+export const GET_USER_AVATAR = gql`
+    query getUserAvatar{
+        getNameAvatar{
+            name
+            avatar
+        }
     }
 `

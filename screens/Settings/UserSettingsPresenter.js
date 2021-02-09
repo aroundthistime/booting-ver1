@@ -317,7 +317,8 @@ export default ({
                     }
                 });
                 if (setUserSettings){
-                    navigation.navigate("SettingsHome");
+                    navigation.navigate("Tabs");
+                    // Restart();
                 } else{
                     Alert.alert("오류가 발생하였습니다. 다시 시도해주세요")
                 }
