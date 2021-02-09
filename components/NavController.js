@@ -6,6 +6,7 @@ import TabNavigations from "../navigations/TabNavigations";
 import { GET_USER_STATUS, setUserToken } from "../screens/GlobalQueries";
 import { UserProvider } from "../UserContext";
 import Loader from "./Loader";
+import LoggedInNavigation from "../navigations/LoggedInNavigation";
 
 
 
@@ -23,7 +24,7 @@ export default ({token}) => {
         if (!loading && data && data.getMe){
             return (
                 <UserProvider userObj={data.getMe} refetch={refetch}>
-                    <TabNavigations/>
+                    <LoggedInNavigation/>
                 </UserProvider>
             )
         } else{

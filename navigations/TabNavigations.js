@@ -1,9 +1,9 @@
 import React from "react";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import ChatNavigation from "./ChatNavigation";
-import SettingsNavigation from "./SettingsNavigation";
 import TabIcon from "../components/TabIcon";
 import Home from "../screens/Home/Home";
+import SettingsNavigation from "./SettingsNavigation";
+import ChatNavigation from "./ChatNavigation";
 
 const TabNavigation = createBottomTabNavigator();
 
@@ -13,7 +13,7 @@ export default () => (
         showLabel : false,
         tabStyle : {
             backgroundColor : "#FAFAFA"
-        }
+        },
     }}>
         <TabNavigation.Screen
             name="Home"
@@ -21,7 +21,7 @@ export default () => (
             options={{
                 tabBarIcon : ({focused}) => focused
                 ? <TabIcon name="user-alt" group="fontAwemsome5" color="rgba(100, 100, 100, 0.9)" />
-                : <TabIcon name="user" group="fontAwemsome5" />
+                : <TabIcon name="user" group="fontAwemsome5" />,
             }}
         />
         <TabNavigation.Screen
@@ -30,7 +30,7 @@ export default () => (
             options={{
                 tabBarIcon : ({focused}) => focused
                 ? <TabIcon name="chatbubble-ellipses" size={24} color="rgba(100, 100, 100, 0.9)" />
-                : <TabIcon name="chatbubble-ellipses-outline" size={24} />
+                : <TabIcon name="chatbubble-ellipses-outline" size={24} />,
             }}
         />
         <TabNavigation.Screen
@@ -39,7 +39,7 @@ export default () => (
             options={{
                 tabBarIcon : ({focused}) => focused
                 ? <TabIcon name="cog" group="fontAwemsome5" color="rgba(100, 100, 100, 0.9)"/>
-                : <TabIcon name="cog" group="fontAwemsome5" color="rgba(100, 100, 100, 0.3)"/>
+                : <TabIcon name="cog" group="fontAwemsome5" color="rgba(100, 100, 100, 0.3)"/>,
             }}
         />
     </TabNavigation.Navigator>
