@@ -95,7 +95,7 @@ export default ({navigation}) => {
                     title="버전정보"
                 />
                 <SettingsTab
-                    onPress={()=>1}
+                    onPress={()=> navigation.navigate("SettingsGuide")}
                     family={IONICONS}
                     name="md-help-circle-outline"
                     title="도움말"

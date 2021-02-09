@@ -2,28 +2,79 @@ import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import { Feather, FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import constants from "../../constants";
-import { Alert, Animated, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Animated, StatusBar, Text, TouchableOpacity, View } from "react-native";
 import { BoxShadow } from "react-native-shadow";
 import { useMutation } from "@apollo/client";
 import {REPORT_USER} from "../GlobalQueries"
 import { CREATE_RESPONSE } from "./HomeQueries";
 
+
+const NoUserView = styled.View`
+    justify-content : center;
+    align-items : center;
+    flex : 1;
+    width : ${constants.width};
+    background-color : #CBCDFD;
+`
+
+const NoUserContainer = styled.View`
+    width : 300;
+    height : 205;
+    align-items : center;
+    padding-top : 15;
+    padding-bottom : 15;
+    padding-left : 20;
+    padding-right : 20;
+    background-color :#fcfcfc;
+`
+
+const NoUserTitle = styled.Text`
+    font-size : 23px;
+    border-bottom-width : 1;
+    border-bottom-color : rgba(0, 0, 0, 0.1);
+    width : 260;
+    text-align : center;
+    padding-bottom : 5;
+    margin-bottom : 15;
+`
+
+const NoUserGuide = styled.Text`
+    font-size : 16;
+    line-height : 20;
+    margin-bottom : 25;
+`
+
 const RefreshButton = styled.TouchableOpacity`
     align-items : center;
-    position : absolute;
-    align-self : center;
-    bottom : -${constants.height / 4}
+    justify-content : center;
+    background-color : ${props => props.theme.pastelBg};
+    width : 200;
+    height : 40;
 `
 
 const NoUser = ({onPress}) => (
-    <View>
-        <Text style={{textAlign : "center", fontSize : 16}}>
-            현재 이상형에 부합하는 유저가 더 이상 존재하지 않습니다 😥{"\n"}이상형 기준을 수정하거나 나중에 다시 시도해주세요
-        </Text>
-        <RefreshButton onPress={onPress}>
-            <FontAwesome5 name="undo-alt" size={50} color="rgba(0, 0, 0, 0.35)" />
-        </RefreshButton>
-    </View>
+    <NoUserView>
+        <NoUserContainer
+            style={{
+                shadowColor: "#000",
+                shadowOffset: {
+                width: 0,
+                height: 2
+                },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.84,
+                elevation: 5,
+            }}
+        >
+            <NoUserTitle>알림</NoUserTitle>
+            <NoUserGuide>
+                현재 이상형에 부합하는 유저가 더 이상 존재하지 않습니다. 이상형 기준을 수정하거나 나중에 다시 시도해주세요
+            </NoUserGuide>
+            <RefreshButton onPress={onPress}>
+                <Text style={{fontSize : 15, color : "f2f2f2"}}>새로고침</Text>
+            </RefreshButton>
+        </NoUserContainer>
+    </NoUserView>
 )
 
 const UserImagesContainer = styled.View`
@@ -224,9 +275,11 @@ export default ({
                 </>
             )}
             {users.length === 0 && (
+                <>
+                <StatusBar></StatusBar>
                 <NoUser onPress={getMoreUsers} />
+                </>
             )}
         </>
     )
 }
-//befire 허ㅏㅂ치기

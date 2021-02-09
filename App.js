@@ -17,7 +17,6 @@ import NavController from './components/NavController';
 import { AuthProvider } from './AuthContext';
 import { NavigationContainer } from '@react-navigation/native';
 
-
 export default function App() {
   const [loaded, setLoaded] = useState(false);
   const [client, setClient] = useState(null);

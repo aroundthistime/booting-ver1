@@ -1,13 +1,13 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import TabNavigations from "./TabNavigations";
-import UserSettings from "../screens/Settings/UserSettings";
-import AlertSettings from "../screens/Settings/AlertSettings";
-import SettingsVersion from "../screens/Settings/SettingsVersion";
-import Chat from "../screens/Chats/Chat";
 import styled from "styled-components";
 import { Ionicons } from "@expo/vector-icons";
+import TabNavigations from "./TabNavigations";
+import UserSettings from "../screens/Settings/UserSettings";
+import SettingsVersion from "../screens/Settings/SettingsVersion";
+import Chat from "../screens/Chats/Chat";
 import SetSettingsLink from "../components/SetSettingsLink";
+import SettingsGuide from "../screens/Settings/SettingsGuide";
 
 
 const Container = styled.TouchableOpacity`
@@ -53,8 +53,11 @@ export default ({navigation, route, settingsDone}) => (
             })}
         />
         <LoggedInNavigation.Screen
-            name="AlertSettings"
-            component={AlertSettings}
+            name="SettingsGuide"
+            component={SettingsGuide}
+            options={{
+                title : "도움말"
+            }}
         />
         <LoggedInNavigation.Screen
             name="SettingsVersion"

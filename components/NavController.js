@@ -9,6 +9,7 @@ import Loader from "./Loader";
 import LoggedInNavigation from "../navigations/LoggedInNavigation";
 import Banned from "../screens/Banned";
 import Deactivated from "../screens/Deactivated";
+import SettingsGuide from "../screens/Settings/SettingsGuide";
 
 
 
@@ -46,6 +47,7 @@ export default ({token}) => {
                 <Loader />
             )
         }
+        // return <SettingsGuide />
         // return <Deactivated />
         // return <Banned />
         // return <TabNavigations />
