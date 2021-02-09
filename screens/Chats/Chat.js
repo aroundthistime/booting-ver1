@@ -151,7 +151,7 @@ export default ({navigation, route}) => {
         return layoutMeasurement.height + contentOffset.y >=
           contentSize.height - paddingToBottom;
     };
-    const {data, error} = useQuery(GET_CHAT, {
+    const {data, error, refetch} = useQuery(GET_CHAT, {
         suspend : true,
         variables : {
             id : chatId
@@ -163,6 +163,12 @@ export default ({navigation, route}) => {
             Keyboard.removeListener("keyboardDidShow",scrollToBottom);
         }
     }, []);
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', async() => {
+          await refetch();
+        });
+        return unsubscribe;
+      }, [navigation]);
     useEffect(() => {
         if (newMessageData && newMessageData.newMessageFromChat){
             setMessages([...messages, newMessageData.newMessageFromChat])
@@ -386,7 +392,7 @@ export default ({navigation, route}) => {
                                             <ChatNotice>{formatToFullDate(message.createdAt)}</ChatNotice>
                                             <Message 
                                                 fromMe={fromMe}
-                                                avatar={avatar}
+                                                avatar={opponent.avatar}
                                                 text={message.text}
                                                 createdAt={createdAt}
                                                 isMyFirst={isMyFirst}
@@ -397,6 +403,12 @@ export default ({navigation, route}) => {
                             }
                         })}
                         {data.getChat.participants.length < 2 && <ChatNotice style={{marginTop : 30, marginBottom : 20}}>상대방이 대화를 종료하였습니다.</ChatNotice>}
+                        {data.getChat.participants.length === 2 && opponent && opponent.isBanned && (
+                            <ChatNotice style={{marginTop : 30, marginBottom : 20}}>상대방의 계정이 규정위반으로 정지되었습니다</ChatNotice>
+                        )}
+                        {data.getChat.participants.length === 2 && opponent && !opponent.isBanned && opponent.isDeactivated && (
+                            <ChatNotice style={{marginTop : 30, marginBottom : 20}}>상대방의 계정이 비활성화되었습니다</ChatNotice>
+                        )}
                     </ScrollView>
                 </KeyboardAwareScrollView>
                 <ChatInputContainer>
@@ -408,7 +420,7 @@ export default ({navigation, route}) => {
                         placeholder="메시지를 입력하세요"
                         maxHeight={FONT_SIZE * NUMBER_OF_LINES + 30}
                         scrollEnabled
-                        editable={data.getChat.participants.length > 1}
+                        editable={data.getChat.participants.length > 1 && !data.getChat.participants.some(participant => participant.isBanned || participant.isDeactivated)}
                     />
                     <ChatSendBtn onPress={()=>sendMessage()}>
                         <Ionicons name="paper-plane-sharp" size={24} color="black" />

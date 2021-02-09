@@ -18,10 +18,48 @@ export const GET_CHATS = gql`
                 createdAt
             }
             createdAt
-            updatedAt
         }
     }
 `
+
+export const NEW_MESSAGE = gql`
+    subscription newMessage($id : String!) {
+        newMessage(id : $id){
+            id
+            text
+            from{
+                id
+            }
+            createdAt
+            chat{
+                id
+            }
+        }
+    }
+`
+
+export const NEW_CHAT = gql`
+    subscription newChat($id : String!){
+        newChat(id : $id){
+            id
+            participants{
+                id
+                name
+                avatar
+            }
+            lastMessage{
+                text
+                from{
+                    id
+                }
+                isChecked
+                createdAt
+            }
+            createdAt
+        }
+    }
+`
+
 
 export const QUIT_CHAT = gql`
     mutation quitChat($id : String!){

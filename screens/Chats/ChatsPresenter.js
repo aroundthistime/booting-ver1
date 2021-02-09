@@ -1,11 +1,11 @@
-import React from "react";
-import { useMutation } from "@apollo/client";
+import React, { useEffect, useState } from "react";
+import { useMutation, useSubscription } from "@apollo/client";
 import { Alert, ScrollView } from "react-native";
 import styled from "styled-components";
 import styles from "../../styles";
 import { getUserObj } from "../../UserContext";
 import { chatsSortFunc, getOpponent, getTimeStamp } from "../../utils"
-import { QUIT_CHAT } from "./ChatQueries";
+import { QUIT_CHAT, NEW_MESSAGE, NEW_CHAT } from "./ChatQueries";
 
 
 const ChatTabsContainer = styled.View`
@@ -63,7 +63,7 @@ const ChatTimestamp = styled.Text`
 `
 
 const ChatUnreadMark = styled.View`
-    background-color : red;
+    background-color : ${props => props.theme.pastelBtn};
     width : 12;
     height : 12;
     border-radius : 6;
@@ -73,13 +73,48 @@ const ChatUnreadMark = styled.View`
 `
 
 export default ({
-    chats,
+    chatsList,
     refetch,
     navigation
 }) => {
+    const [chats, setChats] = useState(chatsList);
     const sortedChats = [...chats].sort(chatsSortFunc);
     const userObj = getUserObj();
     const [quitChatMutation] = useMutation(QUIT_CHAT);
+    const { data : newMessageData } = useSubscription(
+        NEW_MESSAGE,
+        {
+            variables : {id : userObj.id}
+        }
+    );
+    const { data : newChatData } = useSubscription(
+        NEW_CHAT,
+        {
+            variables : {id : userObj.id}
+        }
+    )
+    useEffect(() => {
+        if (newMessageData && newMessageData.newMessage){
+            const updatedChats = chats.map(chat => {
+                if (chat.id === newMessageData.newMessage.chat.id){
+                    return ({
+                        ...chat,
+                        lastMessage : newMessageData.newMessage
+                    })
+                } else {
+                    return chat
+                }
+            });
+            console.log(updatedChats);
+            setChats(updatedChats);
+            console.log("UPDATEDCHATS");
+        }
+    }, [newMessageData]);
+    useEffect(() => {
+        if (newChatData && newChatData.newChat){
+            setChats([...chats, newChatData.newChat])
+        }
+    }, [newChatData])
     const quitChat = async(chatId, opponentName) => {
         const { data : {quitChat}} = await quitChatMutation({
             variables : {
@@ -115,6 +150,7 @@ export default ({
             <ChatTabsContainer>
                 {sortedChats.map((chat) => {
                     const opponent = getOpponent(chat.participants, userObj.id);
+                    console.log(chat.lastMessage);
                     return (
                         <ChatTab key={chat.id}
                             onPress={() => navigation.navigate("Chat", {chatId : chat.id, opponentName : opponent.name})}

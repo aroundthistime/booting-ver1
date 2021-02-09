@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import React from "react";
+import React, { useEffect } from "react";
 import Loader from "../../components/Loader";
 import { GET_CHATS } from "./ChatQueries";
 import ChatsPresenter from "./ChatsPresenter";
@@ -10,10 +10,16 @@ export default ({navigation}) => {
         fetchPolicy : "network-only",
         notifyOnNetworkStatusChange: true
     });
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', async() => {
+          await refetch();
+        });
+        return unsubscribe;
+      }, [navigation]);
     return (
         <>
             {!loading && data && data.getChats ? (
-                <ChatsPresenter chats={data.getChats} refetch={refetch} navigation={navigation} />
+                <ChatsPresenter chatsList={data.getChats} refetch={refetch} navigation={navigation} />
             ) : (
                 <Loader />
             )}
