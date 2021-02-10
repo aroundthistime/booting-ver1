@@ -42,7 +42,9 @@ const MessageTime = styled.Text`
 `
 
 const MessageChecked = styled.Text`
-    font-size : 12;
+    font-size : 10;
+    align-self : flex-end;
+    margin-bottom : -3;
 `
 
 const MessageInfos = styled.View`

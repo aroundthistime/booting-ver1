@@ -118,3 +118,13 @@ export const READ_MESSAGE = gql`
         readMessage(messageId : $messageId)
     }
 `
+
+export const  DETECT_MESSAGE_READ = gql`
+    subscription detectMessageRead($chatId : String!){
+        detectMessageRead(chatId : $chatId){
+            message{
+                id
+            }
+        }
+    }
+`

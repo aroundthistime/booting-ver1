@@ -105,9 +105,7 @@ export default ({
                     return chat
                 }
             });
-            console.log(updatedChats);
             setChats(updatedChats);
-            console.log("UPDATEDCHATS");
         }
     }, [newMessageData]);
     useEffect(() => {

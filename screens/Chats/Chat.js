@@ -11,7 +11,7 @@ import styles from "../../styles";
 import { getUserObj } from "../../UserContext";
 import { getOpponent } from "../../utils";
 import { REPORT_USER } from "../GlobalQueries";
-import { GET_CHAT, NEW_MESSAGE_FROM_CHAT, QUIT_CHAT, READ_MESSAGE, SEND_MESSAGE } from "./ChatQueries";
+import { DETECT_MESSAGE_READ, GET_CHAT, NEW_MESSAGE_FROM_CHAT, QUIT_CHAT, READ_MESSAGE, SEND_MESSAGE } from "./ChatQueries";
 
 const FONT_SIZE = 16;
 const NUMBER_OF_LINES = 2;
@@ -141,6 +141,12 @@ export default ({navigation, route}) => {
             id : chatId
         }}
     );
+    const {data : messageReadData} = useSubscription(
+        DETECT_MESSAGE_READ,
+        {
+            variables : { chatId }
+        }
+    );
     const scrollToBottom = () => {
         if (scrollViewRef.current){
             scrollViewRef.current.scrollToEnd();
@@ -173,7 +179,23 @@ export default ({navigation, route}) => {
         if (newMessageData && newMessageData.newMessageFromChat){
             setMessages([...messages, newMessageData.newMessageFromChat])
         }
-    }, [newMessageData])
+    }, [newMessageData]);
+    useEffect(() => {
+        if (messageReadData && messageReadData.detectMessageRead){
+            const readMessage = messageReadData.detectMessageRead.message;
+            const updatedMessages = messages.map(message => {
+                if (message.id === readMessage.id && message.from.id === userObj.id){
+                    return ({
+                        ...message,
+                        isChecked : true
+                    })
+                } else {
+                    return message
+                }
+            });
+            setMessages(updatedMessages);
+        }
+    }, [messageReadData]);
     useEffect(() => {
         if (data && data.getChat){
             setMessages(data.getChat.messages);
@@ -341,11 +363,15 @@ export default ({navigation, route}) => {
                             <Text style={{fontWeight: "bold"}}>{opponentName}</Text> 님과 매칭되었습니다 ❤{"\n"}대화를 시작해보세요
                         </ChatNotice>
                         {messages.map((message, index, array) => {
+                            let isChecked = false;
+                            let createdAt = "";
+                            const fromMe = userObj.id === message.from.id;
+                            if (fromMe && index === array.length - 1){
+                                isChecked = message.isChecked;
+                            }
                             if (index === 0){
-                                const fromMe = userObj.id === message.from.id;
-                                let createdAt = "";
                                 if (array.length === 1 || !checkSameTime(array[1].createdAt, message.createdAt)){
-                                    createdAt = formatToHourMinute(message.createdAt)
+                                    createdAt = formatToHourMinute(message.createdAt);
                                 }
                                 return (
                                     <>
@@ -356,13 +382,12 @@ export default ({navigation, route}) => {
                                             avatar={fromMe ? undefined : opponent.avatar}
                                             text={message.text}
                                             createdAt={createdAt}
+                                            isChecked={isChecked}
                                         />
                                     </>
                                 )
                             } else {
-                                const fromMe = userObj.id === message.from.id;
                                 let avatar;
-                                let createdAt="";
                                 let isMyFirst = false;
                                 if (array[index-1].from.id !== message.from.id){
                                     if (fromMe){
@@ -372,7 +397,7 @@ export default ({navigation, route}) => {
                                     }
                                 }
                                 if (index === array.length - 1 || !checkSameTime(message.createdAt, array[index+1].createdAt)){
-                                    createdAt = formatToHourMinute(message.createdAt)
+                                    createdAt = formatToHourMinute(message.createdAt);
                                 }
                                 if (checkSameDate(message.createdAt, array[index-1].createdAt)){
                                     return (
@@ -383,6 +408,7 @@ export default ({navigation, route}) => {
                                                 text={message.text}
                                                 createdAt={createdAt}
                                                 isMyFirst={isMyFirst}
+                                                isChecked={isChecked}
                                             />
                                         </>
                                     )
@@ -396,6 +422,7 @@ export default ({navigation, route}) => {
                                                 text={message.text}
                                                 createdAt={createdAt}
                                                 isMyFirst={isMyFirst}
+                                                isChecked={isChecked}
                                             />
                                         </>
                                     )
