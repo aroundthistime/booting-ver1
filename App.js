@@ -16,12 +16,16 @@ import styles from './styles';
 import NavController from './components/NavController';
 import { AuthProvider } from './AuthContext';
 import { NavigationContainer } from '@react-navigation/native';
+import { useFonts } from 'expo-font';
 
 export default function App() {
   const [loaded, setLoaded] = useState(false);
   const [client, setClient] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(null);
   const [notificationToken, setNotificationToken] = useState();
+  const [fontLoaded] = useFonts({
+    BalsamiqSans : require("./assets/fonts/BalsamiqSans-Regular.ttf"),
+  })
   const registerForPushNotificationsAsync = async() => {
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
@@ -72,7 +76,7 @@ export default function App() {
   useEffect(() => {
     preLoad();
   }, [])
-  return loaded  && client && isLoggedIn !== null ? (
+  return loaded && fontLoaded && client && isLoggedIn !== null ? (
       <NavigationContainer>
         <ApolloProvider client={client}>
           <ThemeProvider theme={styles}>

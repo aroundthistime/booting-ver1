@@ -15,13 +15,13 @@ const View = styled.View`
 const Title = styled.Text`
     font-size : 60px;
     color : #FDFFFE;
+    font-family : BalsamiqSans;
 `
 
 const SubTitle = styled.Text`
     font-size : 15px;
     color : #FDFFFE;
     margin-bottom : ${constants.height / 20};
-
 `
 
 export default ({navigation}) => (
